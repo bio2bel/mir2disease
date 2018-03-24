@@ -9,7 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-build/
+docs/build/
 develop-eggs/
 dist/
 downloads/
@@ -99,3 +99,5 @@ ENV/
 
 # mypy
 .mypy_cache/
+.idea
+.idea/*

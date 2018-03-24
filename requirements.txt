@@ -1,0 +1,8 @@
+sqlalchemy
+click
+bio2bel
+pybel
+pandas
+tqdm
+flask[web]
+flask_admin[web]
