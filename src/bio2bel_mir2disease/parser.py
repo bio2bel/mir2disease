@@ -32,9 +32,10 @@ def get_mir2disease_df(url=None, cache=True, force_download=False):
 
     1) miRNA ID
     2) MeSHDisease term
-    3) Method
-    4) Year
-    5) Description
+    3) Relationship
+    4) Detection method
+    5) Year
+    6) Description
 
     :param Optional[str] url: A custom path to use for data
     :param bool cache: If true, the data is downloaded to the file system, else it is loaded from the internet
