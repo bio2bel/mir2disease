@@ -101,6 +101,7 @@ ENV/
 .mypy_cache/
 .idea
 .idea/*
+**/.idea
 .idea/inspectionProfiles/
 .idea/mir2disease.iml
 .idea/misc.xml
