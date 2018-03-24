@@ -10,33 +10,33 @@ Installation
 ------------
 Get the Latest
 ~~~~~~~~~~~~~~~
-Download the most recent code from `GitHub <https://github.com/bio2bel/hmdd>`_ with:
+Download the most recent code from `GitHub <https://github.com/bio2bel/mir2disease>`_ with:
 
 .. code-block:: sh
 
-   $ python3 -m pip install git+https://github.com/bio2bel/hmdd.git
+   $ python3 -m pip install git+https://github.com/bio2bel/mir2disease.git
 
 For Developers
 ~~~~~~~~~~~~~~
-Clone the repository from `GitHub <https://github.com/bio2bel/hmdd>`_ and install in editable mode with:
+Clone the repository from `GitHub <https://github.com/bio2bel/mir2disease>`_ and install in editable mode with:
 
 .. code-block:: sh
 
-   $ git clone https://github.com/bio2bel/hmdd.git
-   $ cd hmdd
+   $ git clone https://github.com/bio2bel/mir2disease.git
+   $ cd mir2disease
    $ python3 -m pip install -e .
 
 
 Setup
 -----
-1. Create a :class:`bio2bel_hmdd.Manager` object
+1. Create a :class:`bio2bel_mir2disease.Manager` object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 >>> from bio2bel_mir2disease import Manager
 >>> manager = Manager()
 
 2. Populate the database
 ~~~~~~~~~~~~~~~~~~~~~~~~
-This step will take sometime since the HMDD data needs to be downloaded, parsed, and fed into the database line
+This step will take sometime since the mir2disease data needs to be downloaded, parsed, and fed into the database line
 by line.
 
 >>> manager.populate()
@@ -51,8 +51,8 @@ from .manager import Manager
 __version__ = '0.0.1-dev'
 
 __title__ = 'bio2bel_mir2disease'
-__description__ = "A package for converting the Human microRNA Disease Database (HMDD) to BEL."
-__url__ = 'https://github.com/bio2bel/hmdd'
+__description__ = "A package for converting the Human microRNA Disease Database (mir2disease) to BEL."
+__url__ = 'https://github.com/bio2bel/mir2disease'
 
 __author__ = 'Mehdi Ali, Dejan Dukic, and Charles Tapley Hoyt'
 __email__ = 'charles.hoyt@scai.fraunhofer.de'
