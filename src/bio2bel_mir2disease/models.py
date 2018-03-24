@@ -60,6 +60,5 @@ class Relationship(Base):
             mirna_node,
             disease_node,
             relation=ASSOCIATION,
-            citation=str(self.pubmed),
             evidence=str(self.description),
         )
