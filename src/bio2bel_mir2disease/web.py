@@ -36,7 +36,7 @@ def add_admin(app, session, **kwargs):
 def get_app(connection=None, url=None):
     """Creates a Flask application
 
-    :type connection: Optional[str or bio2bel_hmdd.Manager]
+    :type connection: Optional[str or bio2bel_mir2disease.Manager]
     :type url: Optional[str]
     :rtype: flask.Flask
     """

@@ -1,10 +1,6 @@
-
-
-
 # -*- coding: utf-8 -*-
 
 """Bio2BEL mir2disease is a package which allows the user to work with the miR2Disease Database.
-
 
 Installation
 ------------
