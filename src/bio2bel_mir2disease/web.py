@@ -9,44 +9,8 @@ use the web extra like:
 """
 
 from bio2bel_mir2disease.manager import Manager
-from bio2bel_mir2disease.models import *
-
-
-def add_admin(app, session, **kwargs):
-    """Adds a Flask Admin interface to an application
-
-    :param flask.Flask app:
-    :param session:
-    :param kwargs:
-    :rtype: flask_admin.Admin
-    """
-    from flask_admin import Admin
-    from flask_admin.contrib.sqla import ModelView
-
-    admin = Admin(app, **kwargs)
-
-    admin.add_view(ModelView(MiRNA, session))
-    admin.add_view(ModelView(Disease, session))
-    admin.add_view(ModelView(Relationship, session))
-
-    return admin
-
-
-def get_app(connection=None, url=None):
-    """Creates a Flask application
-
-    :type connection: Optional[str or bio2bel_mir2disease.Manager]
-    :type url: Optional[str]
-    :rtype: flask.Flask
-    """
-    from flask import Flask
-
-    app = Flask(__name__)
-    manager = Manager.ensure(connection=connection)
-    add_admin(app, manager.session, url=(url or '/'))
-    return app
-
 
 if __name__ == '__main__':
-    app_ = get_app(url='/')
+    manager = Manager()
+    app_ = manager.get_flask_admin_app()
     app_.run(debug=True, host='0.0.0.0', port=5000)
