@@ -3,13 +3,13 @@
 import logging
 
 from bio2bel.utils import get_connection
-from pybel import BELGraph
+from pybel import BELGraph, to_database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from tqdm import tqdm
 
 from .constants import MODULE_NAME
-from .models import Disease, MiRNA, Relationship, Base
+from .models import Base, Disease, MiRNA, Relationship
 from .parser import get_mir2disease_df
 
 __all__ = ['Manager']
@@ -171,3 +171,7 @@ class Manager(object):
             relationship.add_to_bel_graph(graph)
 
         return graph
+
+    def upload_bel_graph(self, connection=None):
+        graph = self.to_bel_graph()
+        to_database(graph, connection=connection)
