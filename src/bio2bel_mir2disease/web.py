@@ -8,10 +8,6 @@ use the web extra like:
     pip install bio2bel_mir2disease[web]
 """
 
-import flask_admin
-from flask import Flask
-from flask_admin.contrib.sqla import ModelView
-
 from bio2bel_mir2disease.manager import Manager
 from bio2bel_mir2disease.models import *
 
@@ -24,7 +20,10 @@ def add_admin(app, session, **kwargs):
     :param kwargs:
     :rtype: flask_admin.Admin
     """
-    admin = flask_admin.Admin(app, **kwargs)
+    from flask_admin import Admin
+    from flask_admin.contrib.sqla import ModelView
+
+    admin = Admin(app, **kwargs)
 
     admin.add_view(ModelView(MiRNA, session))
     admin.add_view(ModelView(Disease, session))
@@ -40,9 +39,11 @@ def get_app(connection=None, url=None):
     :type url: Optional[str]
     :rtype: flask.Flask
     """
+    from flask import Flask
+
     app = Flask(__name__)
     manager = Manager.ensure(connection=connection)
-    add_admin(app, manager.session, url=url)
+    add_admin(app, manager.session, url=(url or '/'))
     return app
 
 

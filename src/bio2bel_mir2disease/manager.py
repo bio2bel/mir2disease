@@ -2,12 +2,11 @@
 
 import logging
 
-from bio2bel.utils import get_connection
-from pybel import BELGraph, to_database
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import pybel
+from pybel import BELGraph
 from tqdm import tqdm
 
+from bio2bel.abstractmanager import AbstractManager
 from .constants import MODULE_NAME
 from .models import Base, Disease, MiRNA, Relationship
 from .parser import get_mir2disease_df
@@ -17,38 +16,18 @@ __all__ = ['Manager']
 log = logging.getLogger(__name__)
 
 
-class Manager(object):
+class Manager(AbstractManager):
+    module_name = MODULE_NAME
+
     def __init__(self, connection=None):
-        self.connection = get_connection(MODULE_NAME, connection=connection)
-        self.engine = create_engine(self.connection)
-        self.session_maker = sessionmaker(bind=self.engine, autoflush=False, expire_on_commit=False)
-        self.session = self.session_maker()
-        self.create_all()
+        super(Manager, self).__init__(connection=connection)
 
         self.name_mirna = {}
         self.name_disease = {}
 
-    def create_all(self, check_first=True):
-        """Create the empty database (tables)"""
-        Base.metadata.create_all(self.engine, checkfirst=check_first)
-
-    def drop_all(self, check_first=True):
-        """Create the empty database (tables)"""
-        Base.metadata.drop_all(self.engine, checkfirst=check_first)
-
-    @staticmethod
-    def ensure(connection=None):
-        """Checks and allows for a Manager to be passed to the function.
-
-        :param connection: can be either an already build manager or a connection string to build a manager with.
-        """
-        if connection is None or isinstance(connection, str):
-            return Manager(connection=connection)
-
-        if isinstance(connection, Manager):
-            return connection
-
-        raise TypeError
+    @property
+    def base(self):
+        return Base
 
     def get_mirna_by_name(self, name):
         """Gets an miRNA from the database if it exists
@@ -105,9 +84,6 @@ class Manager(object):
         self.session.add(disease)
 
         return disease
-
-    def _count_model(self, model):
-        return self.session.query(model).count()
 
     def count_mirnas(self):
         """Counts the number of miRNAs in the database
@@ -172,6 +148,10 @@ class Manager(object):
 
         return graph
 
-    def upload_bel_graph(self, connection=None):
+    def to_bel_file(self, file):
         graph = self.to_bel_graph()
-        to_database(graph, connection=connection)
+        pybel.to_bel(graph, file=file)
+
+    def upload_bel(self, connection=None):
+        graph = self.to_bel_graph()
+        pybel.to_database(graph, connection=connection)
