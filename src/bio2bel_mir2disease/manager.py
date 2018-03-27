@@ -7,13 +7,17 @@ from pybel import BELGraph
 from tqdm import tqdm
 
 from bio2bel.abstractmanager import AbstractManager
-from .constants import MODULE_NAME
+from .constants import MODULE_NAME, disease_col_name
 from .models import Base, Disease, MiRNA, Relationship
 from .parser import get_mir2disease_df
 
 __all__ = ['Manager']
 
 log = logging.getLogger(__name__)
+
+
+def _na(e):
+    return not e or isinstance(e, float)
 
 
 class Manager(AbstractManager):
@@ -52,16 +56,21 @@ class Manager(AbstractManager):
         :param str name: A mirBase name
         :rtype: MiRNA
         """
-        mirna = self.name_mirna.get(name)
+        name = name.strip()
+
+        mirna = self.name_mirna.get(name.lower())
         if mirna is not None:
+            log.debug('got mirna from dict: %s', mirna)
             return mirna
 
         mirna = self.get_mirna_by_name(name)
         if mirna is not None:
-            self.name_mirna[name] = mirna
+            self.name_mirna[name.lower()] = mirna
+            log.debug('got mirna from db: %s', mirna)
             return mirna
 
-        mirna = self.name_mirna[name] = MiRNA(name=name)
+        mirna = self.name_mirna[name.lower()] = MiRNA(name=name)
+        log.debug('make mirna: %s', mirna)
         self.session.add(mirna)
 
         return mirna
@@ -72,16 +81,21 @@ class Manager(AbstractManager):
         :param str name: A MeSH disease name
         :rtype: Disease
         """
-        disease = self.name_disease.get(name)
+        name = name.strip()
+
+        disease = self.name_disease.get(name.lower())
         if disease is not None:
+            log.debug('got disease from dict: %s', disease)
             return disease
 
         disease = self.get_disease_by_name(name)
         if disease is not None:
-            self.name_disease[name] = disease
+            self.name_disease[name.lower()] = disease
+            log.debug('got disease from db: %s', disease)
             return disease
 
-        disease = self.name_disease[name] = Disease(name=name)
+        disease = self.name_disease[name.lower()] = Disease(name=name)
+        log.debug('make disease: %s', disease)
         self.session.add(disease)
 
         return disease
@@ -115,14 +129,24 @@ class Manager(AbstractManager):
         df = get_mir2disease_df(url=url)
 
         log.info('building models')
-        for _, idx, mirna_name, disease_name, pubmed, description in tqdm(df.itertuples(), total=len(df.index)):
-            mirna = self.get_or_create_mirna(mirna_name)
-            disease = self.get_or_create_disease(disease_name)
+
+        df = df[df[disease_col_name].notna()]
+
+        it = tqdm(df.itertuples(), total=len(df.index))
+        for idx, mirna_name, disease_name, direction, experiments, year, description in it:
+            if _na(disease_name):
+                log.info('problem with line %d', idx)
+                continue
+
+            if _na(direction):
+                log.info('probelm with direction on line %d; %s', idx, direction)
+                continue
 
             relationship = Relationship(
+                mirna=self.get_or_create_mirna(mirna_name),
+                disease=self.get_or_create_disease(disease_name),
+                up_regulated=(direction == 'up-regulated'),
                 description=description,
-                mirna=mirna,
-                disease=disease,
             )
 
             self.session.add(relationship)

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from pybel.constants import ASSOCIATION
+from pybel.constants import NEGATIVE_CORRELATION, POSITIVE_CORRELATION
 from pybel.dsl import mirna as mirna_dsl, pathology as pathology_dsl
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -17,9 +17,10 @@ Base = declarative_base()
 
 class MiRNA(Base):
     """This class represents the miRNA table"""
-
     __tablename__ = MIRNA_TABLE_NAME
+
     id = Column(Integer, primary_key=True)
+
     name = Column(String(255), nullable=False, unique=True, index=True, doc='name from mirBase')
 
     def __repr__(self):
@@ -34,9 +35,10 @@ class MiRNA(Base):
 
 class Disease(Base):
     """This class represents the disease table"""
-
     __tablename__ = DISEASE_TABLE_NAME
+
     id = Column(Integer, primary_key=True)
+
     name = Column(String(255), nullable=False, unique=True, index=True, doc='name from MeSH')
 
     def __repr__(self):
@@ -51,12 +53,16 @@ class Disease(Base):
 
 class Relationship(Base):
     """This class represents the miRNA disease relationship table"""
-
     __tablename__ = RELATIONSHIP_TABLE_NAME
+
     id = Column(Integer, primary_key=True)
-    description = Column(String, doc='This is a manually curated relationship')
+
+    up_regulated = Column(Boolean, nullable=False, index=True, doc='up-regulation or down-regulation')
+    description = Column(String(255), nullable=False, doc='This is a manually curated relationship')
+
     mirna_id = Column(Integer, ForeignKey('{}.id'.format(MIRNA_TABLE_NAME)))
     mirna = relationship('MiRNA')
+
     disease_id = Column(Integer, ForeignKey('{}.id'.format(DISEASE_TABLE_NAME)))
     disease = relationship('Disease')
 
@@ -69,7 +75,7 @@ class Relationship(Base):
         graph.add_qualified_edge(
             self.mirna.as_pybel(),
             self.disease.as_pybel(),
-            relation=ASSOCIATION,
+            relation=(POSITIVE_CORRELATION if self.up_regulated else NEGATIVE_CORRELATION),
             evidence=str(self.description),
             citation='18927107'
         )
