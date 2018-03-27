@@ -7,7 +7,7 @@ import re
 import setuptools
 
 PACKAGES = setuptools.find_packages(where='src')
-META_PATH = os.path.join('src', 'bio2bel_hmdd', '__init__.py')
+META_PATH = os.path.join('src', 'bio2bel_mir2disease', '__init__.py')
 INSTALL_REQUIRES = [
     'pybel>=0.11.1',
     'click',
@@ -21,10 +21,10 @@ EXTRAS_REQUIRE = {
 }
 ENTRY_POINTS = {
     'bio2bel': [
-        'hmdd = bio2bel_hmdd',
+        'mir2disease = bio2bel_mir2disease',
     ],
     'console_scripts': [
-        'bio2bel_hmdd = bio2bel_hmdd.cli:main'
+        'bio2bel_mir2disease = bio2bel_mir2disease.cli:main'
     ]
 }
 
