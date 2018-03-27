@@ -71,7 +71,6 @@ class Relationship(Base):
 
         :param pybel.BELGraph graph: A BEL graph
         """
-        # TODO: @Charlie. Define valid relationship type. Corpus contains more information than ASSOCIATION
         graph.add_qualified_edge(
             self.mirna.as_pybel(),
             self.disease.as_pybel(),
