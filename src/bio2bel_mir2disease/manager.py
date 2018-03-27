@@ -161,6 +161,13 @@ class Manager(AbstractManager):
         """
         return self.session.query(Relationship).all()
 
+    def summarize(self):
+        return dict(
+            mirnas=self.count_mirnas(),
+            diseases=self.count_diseases(),
+            relationships=self.count_relationships()
+        )
+
     def to_bel_graph(self):
         """Builds a BEL graph containing all of the miRNA-disease relationships in the database
 
