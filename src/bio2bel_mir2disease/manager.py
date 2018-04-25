@@ -6,7 +6,7 @@ import pybel
 from pybel import BELGraph
 from tqdm import tqdm
 
-from bio2bel.abstractmanager import AbstractManager
+from bio2bel import AbstractManager
 from .constants import MODULE_NAME, disease_col_name
 from .models import Base, Disease, MiRNA, Relationship
 from .parser import get_mir2disease_df
@@ -21,18 +21,27 @@ def _na(e):
 
 
 class Manager(AbstractManager):
+    """Bio2BEL Manager for mir2disease."""
+
     module_name = MODULE_NAME
     flask_admin_models = [MiRNA, Disease, Relationship]
 
-    def __init__(self, connection=None):
-        super(Manager, self).__init__(connection=connection)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.name_mirna = {}
         self.name_disease = {}
 
     @property
-    def base(self):
+    def _base(self):
         return Base
+
+    def is_populated(self):
+        """Check if the database is already populated.
+
+        :rtype: bool
+        """
+        return 0 < self.count_relationships()
 
     def get_mirna_by_name(self, name):
         """Gets an miRNA from the database if it exists
